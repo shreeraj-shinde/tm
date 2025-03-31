@@ -6,7 +6,12 @@ import Tasks from "./_components/Tasks";
 import Users from "./_components/Users";
 import { useContextAPI } from "../context/context";
 import { handleDragEnd as handleDragEndUtils } from "@/lib/utils";
-
+import { useEffect } from "react";
+import { fetchTasks } from "../services/task.service";
+import { Group, Task } from "@/types";
+import { getGroups } from "../services/group.service";
+import { fetchUsers } from "../services/user.service";
+import { ToastContainer } from "react-toastify";
 export default function Dashboard() {
   const { tasks, setTasks, groups, setGroups, users, setUsers } =
     useContextAPI();
@@ -26,6 +31,26 @@ export default function Dashboard() {
     );
   }
 
+  const getData = async () => {
+    try {
+      const [tasksData, groupsData, usersData] = await Promise.all([
+        fetchTasks(),
+        getGroups(),
+        fetchUsers(),
+      ]);
+
+      setTasks(tasksData);
+      setGroups(groupsData);
+      setUsers(usersData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <div>
       <DndContext onDragEnd={handleDragEnd}>
@@ -37,6 +62,7 @@ export default function Dashboard() {
           </div>
         </div>
       </DndContext>
+      <ToastContainer />
     </div>
   );
 }

@@ -6,8 +6,21 @@ import { MdGroups } from "react-icons/md";
 import { FiTarget } from "react-icons/fi";
 import { RxCross1 } from "react-icons/rx";
 import { RiDeleteBin7Line } from "react-icons/ri";
+import { deleteUser, removeUserFromGroup } from "@/app/services/user.service";
+import { useContextAPI } from "@/app/context/context";
 
 export default function UserCard({ user }: { user: User }) {
+  const { users, setUsers } = useContextAPI();
+  const handleDeleteFromGrp = async (groupId: string) => {
+    console.log(groupId);
+    // const response = await removeUserFromGroup(user.id!, groupId);
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    console.log(userId);
+    // const updatedUsers = await deleteUser(userId, users);
+    // setUsers(updatedUsers);
+  };
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: user.id ?? "",
     data: user,
@@ -21,18 +34,23 @@ export default function UserCard({ user }: { user: User }) {
       ref={setNodeRef2}
       className={`transition-all duration-300 rounded-lg ${
         isOver ? "border-2 border-purple-900" : ""
-      }`}>
+      }`}
+    >
       <div
         ref={setNodeRef}
         {...attributes}
         {...listeners}
         style={{ transform: CSS.Translate.toString(transform) }}
-        className="p-4 shadow-lg shadow-gray-200 rounded-lg">
+        className="p-4 shadow-lg shadow-gray-200 rounded-lg"
+      >
         <div className="flex items-center justify-between">
           <h3 className="text-sm text-gray-600 tracking-wide font-semibold">
             {user.name}
           </h3>
-          <button className="text-gray-500 cursor-pointer">
+          <button
+            className="text-gray-500 cursor-pointer"
+            onClick={() => handleDeleteUser(user.id!)}
+          >
             <RiDeleteBin7Line />
           </button>
         </div>
@@ -46,10 +64,14 @@ export default function UserCard({ user }: { user: User }) {
           <div className="flex flex-wrap gap-2 mt-2">
             {user.Group?.map((grp) => (
               <span
-                className="flex items-center gap-2 p-2 bg-gray text-[10px] px-2 py-1 rounded-md bg-black text-white"
-                key={grp.id}>
+                className="flex items-center gap-2 p-2 bg-gray text-[10px] px-2 py-1 rounded-md bg-black text-white cursor:pointer"
+                key={grp.id}
+              >
                 {grp.name}
-                <button>
+                <button
+                  className="cursor:pointer"
+                  onClick={() => handleDeleteFromGrp(grp.id)}
+                >
                   <RxCross1 />
                 </button>
               </span>
@@ -64,9 +86,10 @@ export default function UserCard({ user }: { user: User }) {
             {user.Task?.map((grp) => (
               <span
                 key={grp.id}
-                className=" flex items-center gap-1 text-[10px] px-2 py-1 rounded-md bg-orange-100 text-orange-500 border border-orange-500">
+                className=" flex items-center gap-1 text-[10px] px-2 py-1 rounded-md bg-orange-100 text-orange-500 border border-orange-500"
+              >
                 {grp.title}
-                <button>
+                <button className="cursor:pionter">
                   <RxCross1 />
                 </button>
               </span>

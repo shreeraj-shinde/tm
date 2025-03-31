@@ -1,24 +1,15 @@
 "use client";
-import { useEffect, useState } from "react";
 import { User } from "@/types";
+import { useState } from "react";
 
-import UserCard from "./UserCard";
-import { GrAdd } from "react-icons/gr";
 import Drawer from "@/app/components/Drawer";
-import AddUserForm from "./AddUserForm";
-import { fetchUsers } from "@/app/services/user.service";
 import { useContextAPI } from "@/app/context/context";
+import { GrAdd } from "react-icons/gr";
+import AddUserForm from "./AddUserForm";
+import UserCard from "./UserCard";
 export default function Users() {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
-  const { users, setUsers } = useContextAPI();
-
-  useEffect(() => {
-    const getUsers = async () => {
-      const users = await fetchUsers();
-      setUsers(users as unknown as User[]);
-    };
-    getUsers();
-  }, []);
+  const { users } = useContextAPI();
 
   return (
     <div className="p-2 px-4 bg-slate-50 flex-1 rounded-lg shadow-lg">
@@ -29,7 +20,8 @@ export default function Users() {
         </h3>
         <button
           onClick={() => setOpenDrawer(!openDrawer)}
-          className="flex items-center gap-2 justify-center bg-purple-800 transition-all duration-300 hover:bg-purple-900 text-white px-4 py-2 rounded-md">
+          className="flex text-[12px] items-center gap-2 justify-center bg-purple-800 transition-all duration-300 hover:bg-purple-900 text-white px-3 py-2 rounded-md"
+        >
           <GrAdd />
           Add User
         </button>

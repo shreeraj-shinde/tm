@@ -23,6 +23,7 @@ model User {
   Group     Group[]  @relation("UserGroups")
   type      String   @default("USER")
   Task      Task[]   @relation("UserTasks")
+  
 }
 
 model Group {

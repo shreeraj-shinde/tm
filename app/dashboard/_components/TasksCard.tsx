@@ -17,15 +17,17 @@ export default function TasksCard({ task }: { task: Task }) {
   return (
     <div
       ref={setNodeRef2}
-      className={`mt-2transition-all duration-300 rounded-lg ${
+      className={`mt-2 transition-all duration-300 rounded-lg ${
         isOver ? "border-2 border-purple-900" : ""
-      }`}>
+      }`}
+    >
       <div
         ref={setNodeRef}
         {...attributes}
         {...listeners}
         style={{ transform: CSS.Translate.toString(transform) }}
-        className="p-2 px-4 bg-slate-50 flex-1 rounded-lg shadow-lg">
+        className="p-2 px-4 bg-slate-50 flex-1 rounded-lg shadow-lg"
+      >
         <div className="flex items-center justify-between">
           <h3 className="text-sm text-gray-600 tracking-wide font-semibold">
             {task.title}
@@ -42,7 +44,8 @@ export default function TasksCard({ task }: { task: Task }) {
             {task.assignedToGroup?.map((grp) => (
               <span
                 className="flex items-center gap-2 p-2 bg-gray text-[10px] px-2 py-1 rounded-md bg-black text-white"
-                key={grp.id}>
+                key={grp.id}
+              >
                 {grp.name}
                 <button>
                   <RxCross1 />
@@ -59,7 +62,8 @@ export default function TasksCard({ task }: { task: Task }) {
             {task.assignedTo?.map((user) => (
               <span
                 className="px-2 flex  items-center gap-1 py-1 text-[10px] rounded-md bg-purple-300 text-purple-900 border border-purple-900"
-                key={user.id}>
+                key={user.id}
+              >
                 {user.name}
                 <button>
                   <RxCross1 />

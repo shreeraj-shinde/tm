@@ -10,7 +10,7 @@ export const createUser = async (user: User) => {
       type: user.type,
     },
   });
-  console.log(response);
+
   return response;
 };
 
@@ -46,4 +46,22 @@ export const addUserToGroup = async (userId: string, groupId: string) => {
   });
   const updatedUsers = await fetchUsers();
   return updatedUsers;
+};
+
+export const removeUserFromGroup = async (userId: string, groupId: string) => {
+  const response = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      Group: { disconnect: { id: userId } },
+    },
+  });
+  return response;
+};
+
+export const deleteUser = async (userId: string, users: User[]) => {
+  const deletedUser = await prisma.user.delete({ where: { id: userId } });
+  const newUsers = [...users];
+  const idx = newUsers.findIndex((user) => user.id == deletedUser.id);
+  newUsers.splice(idx, 1);
+  return newUsers;
 };

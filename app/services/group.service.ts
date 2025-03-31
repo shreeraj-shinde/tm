@@ -19,3 +19,15 @@ export const getGroups = async () => {
   });
   return response;
 };
+
+export const deleteGroup = async (groupId: string) => {
+  try {
+    const response = await prisma.group.delete({
+      where: { id: groupId },
+    });
+    return response;
+  } catch (error) {
+    console.log(error);
+    return { error: "Failed to delete group" };
+  }
+};

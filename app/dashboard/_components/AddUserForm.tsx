@@ -22,7 +22,6 @@ export default function AddUserForm() {
         type: "USER",
       });
       setUsers([...users, response as User]);
-      console.log("Form submitted:", response);
     } catch (error) {
       console.error("Error creating user:", error);
     }
@@ -45,7 +44,8 @@ export default function AddUserForm() {
         <div>
           <label
             htmlFor="name"
-            className="block text-sm font-medium text-gray-700">
+            className="block text-sm font-medium text-gray-700"
+          >
             Name
           </label>
           <input
@@ -62,7 +62,8 @@ export default function AddUserForm() {
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-gray-700">
+            className="block text-sm font-medium text-gray-700"
+          >
             Email
           </label>
           <input
@@ -78,7 +79,8 @@ export default function AddUserForm() {
 
         <button
           type="submit"
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+        >
           Add User
         </button>
       </form>

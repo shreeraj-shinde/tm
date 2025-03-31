@@ -1,13 +1,13 @@
-import { getGroups } from "@/app/services/group.service";
+import { Group, Task, User } from "@/types";
+import { Over, Active } from "@dnd-kit/core";
 import {
   assignTaskToGroup,
   assignTaskToUser,
   fetchTasks,
 } from "@/app/services/task.service";
-import { addUserToGroup } from "@/app/services/user.service";
-import { fetchUsers } from "@/app/services/user.service";
-import { Group, Task, User } from "@/types";
-import { Active, Over } from "@dnd-kit/core";
+import { getGroups } from "@/app/services/group.service";
+import { addUserToGroup, fetchUsers } from "@/app/services/user.service";
+import { toast } from "react-toastify";
 
 export const handleDragEnd = async (
   active: Active,
@@ -20,90 +20,91 @@ export const handleDragEnd = async (
   tasks: Task[]
 ) => {
   if (active.id === over?.id) return;
-  if (active.id && over?.id) {
+  if (!active.id || !over?.id) return;
+
+  try {
+    const activeType = active.data.current?.type;
+    const overType = over.data.current?.type;
+
+    // Handle User-Group interactions
     if (
-      active.data.current?.type === "USER" &&
-      over.data.current?.type === "GROUP"
+      (activeType === "USER" && overType === "GROUP") ||
+      (activeType === "GROUP" && overType === "USER")
     ) {
-      const response = await addUserToGroup(
-        active.id as string,
-        over.id as string
+      const userId = activeType === "USER" ? active.id : over.id;
+      const groupId = activeType === "GROUP" ? active.id : over.id;
+
+      // Optimistically update users
+      const updatedUsers = await addUserToGroup(
+        userId as string,
+        groupId as string
       );
-      const updatedGroups = await getGroups();
-      const updatedTasks = await fetchTasks();
-      setUsers(response);
+      setUsers(updatedUsers);
+
+      // Only fetch groups since they're affected
+      const [updatedGroups, updatedTasks] = await Promise.all([
+        getGroups(),
+        fetchTasks(),
+      ]);
       setGroups(updatedGroups);
       setTasks(updatedTasks);
+
+      toast.success("User added to group");
     }
-    if (
-      active.data.current?.type === "GROUP" &&
-      over.data.current?.type === "USER"
+
+    // Handle Task-User interactions
+    else if (
+      (activeType === "TASK" && overType === "USER") ||
+      (activeType === "USER" && overType === "TASK")
     ) {
-      const response = await addUserToGroup(
-        over.id as string,
-        active.id as string
+      const taskId = activeType === "TASK" ? active.id : over.id;
+      const userId = activeType === "USER" ? active.id : over.id;
+
+      // Update tasks directly with the response
+      const updatedTask = await assignTaskToUser(
+        taskId as string,
+        userId as string,
+        tasks
       );
-      const updatedGroups = await getGroups();
-      const updatedTasks = await fetchTasks();
-      setUsers(response);
-      setGroups(updatedGroups);
-      setTasks(updatedTasks);
-    }
-    if (
-      active.data.current?.type === "TASK" &&
-      over.data.current?.type === "USER"
-    ) {
-      const response = await assignTaskToUser(
-        active.id as string,
-        over.id as string
-      );
-      const updatedUsers = await fetchUsers();
-      const updatedTasks = await fetchTasks();
+
+      const [updatedUsers, updatedTasks] = await Promise.all([
+        fetchUsers(),
+        fetchTasks(),
+      ]);
       setUsers(updatedUsers);
       setTasks(updatedTasks);
+
+      toast.success("Task assigned to user");
     }
-    if (
-      active.data.current?.type === "USER" &&
-      over.data.current?.type === "TASK"
+
+    // Handle Task-Group interactions
+    else if (
+      (activeType === "TASK" && overType === "GROUP") ||
+      (activeType === "GROUP" && overType === "TASK")
     ) {
-      const response = await assignTaskToUser(
-        over.id as string,
-        active.id as string
+      const taskId = activeType === "TASK" ? active.id : over.id;
+      const groupId = activeType === "GROUP" ? active.id : over.id;
+
+      // Update tasks directly with the response
+      const updatedTasks = await assignTaskToGroup(
+        taskId as string,
+        groupId as string,
+        tasks
       );
-      const updatedUsers = await fetchUsers();
-      const updatedTasks = await fetchTasks();
-      setUsers(updatedUsers);
       setTasks(updatedTasks);
-    }
-    if (
-      active.data.current?.type === "TASK" &&
-      over.data.current?.type === "GROUP"
-    ) {
-      const response = await assignTaskToGroup(
-        active.id as string,
-        over.id as string
-      );
-      const updatedTasks = await fetchTasks();
-      const updatedGroups = await getGroups();
-      const updatedUsers = await fetchUsers();
-      setTasks(updatedTasks);
+
+      const [updatedGroups, updatedUsers] = await Promise.all([
+        getGroups(),
+        fetchUsers(),
+      ]);
+
       setGroups(updatedGroups);
       setUsers(updatedUsers);
+
+      toast.success("Task assigned to group");
     }
-    if (
-      active.data.current?.type === "GROUP" &&
-      over.data.current?.type === "TASK"
-    ) {
-      const response = await assignTaskToGroup(
-        over.id as string,
-        active.id as string
-      );
-      const updatedTasks = await fetchTasks();
-      const updatedGroups = await getGroups();
-      const updatedUsers = await fetchUsers();
-      setTasks(updatedTasks);
-      setGroups(updatedGroups);
-      setUsers(updatedUsers);
-    }
+  } catch (error) {
+    console.error("Error in handleDragEnd:", error);
+    // You might want to add error handling here, such as showing a notification
   }
 };

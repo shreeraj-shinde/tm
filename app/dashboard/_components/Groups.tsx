@@ -1,22 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Group } from "@/types";
-import { GrAdd } from "react-icons/gr";
-import GroupCard from "./GroupCard";
 import Drawer from "@/app/components/Drawer";
-import AddGroupForm from "./AddGroupForm";
-import { getGroups } from "@/app/services/group.service";
 import { useContextAPI } from "@/app/context/context";
+import { useState } from "react";
+import { GrAdd } from "react-icons/gr";
+import AddGroupForm from "./AddGroupForm";
+import GroupCard from "./GroupCard";
 export default function Groups() {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const { groups, setGroups } = useContextAPI();
-  useEffect(() => {
-    const fetchGroups = async () => {
-      const groups = await getGroups();
-      setGroups(groups as Group[]);
-    };
-    fetchGroups();
-  }, []);
 
   return (
     <div className="p-2 px-4 flex-1 h-full rounded-lg shadow-lg">
@@ -27,7 +18,8 @@ export default function Groups() {
         </h3>
         <button
           onClick={() => setOpenDrawer(!openDrawer)}
-          className="flex items-center gap-2 justify-center bg-purple-800 transition-all duration-300 hover:bg-purple-900 text-white px-4 py-2 rounded-md">
+          className="flex text-[12px] items-center gap-2 justify-center bg-purple-800 transition-all duration-300 hover:bg-purple-900 text-white px-3 py-2 rounded-md"
+        >
           <GrAdd />
           Add Group
         </button>

@@ -22,15 +22,41 @@ export const fetchTasks = async () => {
   return response;
 };
 
-export const assignTaskToUser = async (taskId: string, userId: string) => {
+// export const assignTaskToUser = async (taskId: string, userId: string) => {
+//   const response = await prisma.task.update({
+//     where: { id: taskId },
+//     data: { assignedTo: { connect: { id: userId } } },
+//   });
+//   return response;
+// };
+
+export const assignTaskToUser = async (
+  taskId: string,
+  userId: string,
+  tasks: Task[]
+) => {
   const response = await prisma.task.update({
     where: { id: taskId },
     data: { assignedTo: { connect: { id: userId } } },
+    include: {
+      assignedTo: true,
+      assignedToGroup: true,
+    },
   });
-  return response;
+  const newTasks = tasks.map((task) => {
+    if (task.id === response.id) {
+      return response;
+    }
+    return task;
+  });
+  return newTasks;
 };
 
-export const assignTaskToGroup = async (taskId: string, groupId: string) => {
+export const assignTaskToGroup = async (
+  taskId: string,
+  groupId: string,
+  tasks: Task[]
+) => {
   const group = await prisma.group.findUnique({
     where: { id: groupId },
     include: { users: true },
@@ -41,6 +67,16 @@ export const assignTaskToGroup = async (taskId: string, groupId: string) => {
       assignedToGroup: { connect: { id: groupId } },
       assignedTo: { connect: group?.users.map((user) => ({ id: user.id })) },
     },
+    include: {
+      assignedTo: true,
+      assignedToGroup: true,
+    },
   });
-  return response;
+  const newTasks = tasks.map((task) => {
+    if (task.id === response.id) {
+      return response;
+    }
+    return task;
+  });
+  return newTasks;
 };
