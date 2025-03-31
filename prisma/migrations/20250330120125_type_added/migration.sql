@@ -1,0 +1,8 @@
+-- AlterTable
+ALTER TABLE "Group" ADD COLUMN     "type" TEXT NOT NULL DEFAULT 'GROUP';
+
+-- AlterTable
+ALTER TABLE "Task" ADD COLUMN     "type" TEXT NOT NULL DEFAULT 'TASK';
+
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "type" TEXT NOT NULL DEFAULT 'USER';
